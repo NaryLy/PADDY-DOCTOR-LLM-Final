@@ -12,7 +12,7 @@ venv/
 
 # db + logs created at runtime
 backend/history.db
-backend/uploads/
+backend/uploaded_images/
 results/train_log.txt
 
 # os / editor

@@ -21,9 +21,15 @@ next steps, not just a label.
 
 ## Screenshots
 
-| Home | Diagnosis result | Khmer UI | History |
+| Diagnose | Result | Khmer UI | History |
 |---|---|---|---|
-| ![Home](screenshot_home.png) | ![Result](screenshot_result.png) | ![Khmer](screenshot_km.png) | ![History](screenshot_history.png) |
+| ![Diagnose](screenshot_home.png) | ![Result](screenshot_result.png) | ![Khmer](screenshot_km.png) | ![History](screenshot_history.png) |
+
+Pest damage is distinguished from disease too — e.g. dead heart (stem borer larvae) correctly
+identified and flagged as insect damage rather than a fungal/bacterial disease, with matching
+advice (field-flooding, egg parasitoids, pheromone traps) instead of a fungicide/antibiotic:
+
+![Pest damage example](screenshot_result_pest.png)
 
 ## Features
 
