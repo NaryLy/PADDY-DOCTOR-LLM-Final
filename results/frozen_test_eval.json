@@ -1,0 +1,205 @@
+{
+  "mode": "frozen",
+  "trainable_params": 5130,
+  "best_val_acc": 0.5716120745022479,
+  "best_epoch": 7,
+  "test_acc": 0.5548,
+  "macro_f1": 0.5157,
+  "per_class": {
+    "bacterial_leaf_blight": {
+      "precision": 0.7273,
+      "recall": 0.1096,
+      "f1": 0.1905,
+      "support": 73
+    },
+    "bacterial_leaf_streak": {
+      "precision": 0.6,
+      "recall": 0.4737,
+      "f1": 0.5294,
+      "support": 57
+    },
+    "bacterial_panicle_blight": {
+      "precision": 0.5645,
+      "recall": 0.6731,
+      "f1": 0.614,
+      "support": 52
+    },
+    "blast": {
+      "precision": 0.6367,
+      "recall": 0.6221,
+      "f1": 0.6293,
+      "support": 262
+    },
+    "brown_spot": {
+      "precision": 0.6849,
+      "recall": 0.3425,
+      "f1": 0.4566,
+      "support": 146
+    },
+    "dead_heart": {
+      "precision": 0.6915,
+      "recall": 0.5991,
+      "f1": 0.642,
+      "support": 217
+    },
+    "downy_mildew": {
+      "precision": 0.5294,
+      "recall": 0.4839,
+      "f1": 0.5056,
+      "support": 93
+    },
+    "hispa": {
+      "precision": 0.5,
+      "recall": 0.4583,
+      "f1": 0.4783,
+      "support": 240
+    },
+    "normal": {
+      "precision": 0.4953,
+      "recall": 0.7895,
+      "f1": 0.6087,
+      "support": 266
+    },
+    "tungro": {
+      "precision": 0.4515,
+      "recall": 0.5671,
+      "f1": 0.5027,
+      "support": 164
+    }
+  },
+  "confusion_matrix": [
+    [
+      8,
+      0,
+      1,
+      7,
+      2,
+      6,
+      4,
+      7,
+      20,
+      18
+    ],
+    [
+      0,
+      27,
+      1,
+      7,
+      3,
+      3,
+      3,
+      2,
+      8,
+      3
+    ],
+    [
+      0,
+      0,
+      35,
+      3,
+      0,
+      8,
+      0,
+      1,
+      2,
+      3
+    ],
+    [
+      1,
+      6,
+      2,
+      163,
+      4,
+      8,
+      7,
+      18,
+      32,
+      21
+    ],
+    [
+      0,
+      4,
+      1,
+      19,
+      50,
+      9,
+      2,
+      14,
+      22,
+      25
+    ],
+    [
+      0,
+      2,
+      13,
+      8,
+      2,
+      130,
+      0,
+      24,
+      27,
+      11
+    ],
+    [
+      1,
+      0,
+      4,
+      10,
+      1,
+      3,
+      45,
+      12,
+      9,
+      8
+    ],
+    [
+      0,
+      2,
+      2,
+      14,
+      6,
+      13,
+      17,
+      110,
+      66,
+      10
+    ],
+    [
+      0,
+      2,
+      3,
+      4,
+      2,
+      5,
+      0,
+      26,
+      210,
+      14
+    ],
+    [
+      1,
+      2,
+      0,
+      21,
+      3,
+      3,
+      7,
+      6,
+      28,
+      93
+    ]
+  ],
+  "class_names": [
+    "bacterial_leaf_blight",
+    "bacterial_leaf_streak",
+    "bacterial_panicle_blight",
+    "blast",
+    "brown_spot",
+    "dead_heart",
+    "downy_mildew",
+    "hispa",
+    "normal",
+    "tungro"
+  ],
+  "epochs_trained": 8
+}

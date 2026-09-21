@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Rice Disease Doctor / វេជ្ជបណ្ឌិតជំងឺស្រូវ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Khmer:wght@400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green-900: #1b4332;
+    --green-700: #2d6a4f;
+    --green-500: #40916c;
+    --green-100: #d8f3dc;
+    --amber-500: #e09f3e;
+    --red-500: #d62828;
+    --bg: #f6faf7;
+    --card: #ffffff;
+    --text: #1b1b1b;
+    --muted: #5a6b62;
+    --border: #e1e8e3;
+    --radius: 14px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: "Inter", "Noto Sans Khmer", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+  }
+  :lang(km), [lang="km"] { font-family: "Noto Sans Khmer", "Inter", sans-serif; }
+  header {
+    background: linear-gradient(135deg, var(--green-900), var(--green-700));
+    color: white;
+    padding: 20px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  header .brand { display: flex; align-items: center; gap: 10px; }
+  header .brand .logo { font-size: 28px; }
+  header h1 { font-size: 18px; margin: 0; line-height: 1.3; }
+  header p { margin: 2px 0 0; font-size: 12px; opacity: 0.85; }
+  .lang-toggle {
+    display: flex; background: rgba(255,255,255,0.15); border-radius: 999px; padding: 4px;
+  }
+  .lang-toggle button {
+    border: none; background: transparent; color: white; padding: 6px 14px; border-radius: 999px;
+    cursor: pointer; font-size: 13px; font-weight: 600;
+  }
+  .lang-toggle button.active { background: white; color: var(--green-900); }
+
+  .tabs { display: flex; gap: 8px; padding: 16px 16px 0; max-width: 720px; margin: 0 auto; }
+  .tabs button {
+    flex: 1; padding: 10px; border-radius: 10px 10px 0 0; border: 1px solid var(--border);
+    border-bottom: none; background: #eef4ef; color: var(--muted); cursor: pointer; font-size: 14px; font-weight: 600;
+  }
+  .tabs button.active { background: var(--card); color: var(--green-900); }
+
+  main { max-width: 720px; margin: 0 auto; padding: 0 16px 40px; }
+  .card {
+    background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 20px; margin-top: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+
+  .dropzone {
+    border: 2px dashed var(--green-500); border-radius: var(--radius); padding: 28px;
+    text-align: center; cursor: pointer; background: var(--green-100); transition: background 0.15s;
+  }
+  .dropzone.dragover { background: #b7e4c7; }
+  .dropzone p { margin: 8px 0 0; color: var(--green-900); font-size: 14px; }
+  .dropzone .icon { font-size: 36px; }
+  #fileInput { display: none; }
+
+  .preview-wrap { display: flex; gap: 16px; align-items: flex-start; flex-wrap: wrap; margin-top: 16px; }
+  #previewImg { max-width: 220px; border-radius: 10px; border: 1px solid var(--border); display: none; }
+
+  button.primary {
+    background: var(--green-700); color: white; border: none; border-radius: 10px;
+    padding: 12px 20px; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 14px;
+  }
+  button.primary:disabled { background: #9db8ab; cursor: not-allowed; }
+  button.secondary {
+    background: transparent; color: var(--green-700); border: 1px solid var(--green-700);
+    border-radius: 10px; padding: 8px 14px; font-size: 13px; cursor: pointer;
+  }
+
+  .result { margin-top: 20px; }
+  .result-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+  .badge {
+    display: inline-block; padding: 4px 12px; border-radius: 999px; font-size: 12px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.04em;
+  }
+  .badge.high { background: #ffe0e0; color: var(--red-500); }
+  .badge.medium { background: #fff3d6; color: #a06b00; }
+  .badge.none { background: var(--green-100); color: var(--green-900); }
+
+  .disease-name { font-size: 22px; font-weight: 700; color: var(--green-900); margin: 6px 0 2px; }
+  .confidence { color: var(--muted); font-size: 14px; }
+
+  .bar-row { display: flex; align-items: center; gap: 8px; margin: 4px 0; font-size: 13px; }
+  .bar-track { flex: 1; background: #eef4ef; border-radius: 6px; height: 10px; overflow: hidden; }
+  .bar-fill { height: 100%; background: var(--green-500); }
+  .bar-label { width: 150px; color: var(--muted); font-size: 12px; }
+  .bar-pct { width: 44px; text-align: right; font-variant-numeric: tabular-nums; }
+
+  .advice-list { margin: 10px 0 0; padding-left: 20px; }
+  .advice-list li { margin-bottom: 8px; line-height: 1.5; font-size: 14px; }
+  .section-title { font-weight: 700; font-size: 14px; color: var(--green-900); margin: 18px 0 6px; text-transform: uppercase; letter-spacing: 0.03em;}
+
+  .disclaimer {
+    margin-top: 16px; padding: 10px 12px; background: #fff8e6; border: 1px solid #f0dca0;
+    border-radius: 10px; font-size: 12px; color: #6b5300;
+  }
+
+  .history-item {
+    display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); align-items: center;
+  }
+  .history-item img { width: 56px; height: 56px; border-radius: 8px; object-fit: cover; border: 1px solid var(--border); }
+  .history-item .meta { flex: 1; }
+  .history-item .meta .name { font-weight: 600; color: var(--green-900); font-size: 14px; }
+  .history-item .meta .time { color: var(--muted); font-size: 12px; }
+  .history-item .conf { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+  .empty-state { text-align: center; color: var(--muted); padding: 30px 10px; font-size: 14px; }
+  .spinner {
+    display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.4);
+    border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; margin-right: 8px; vertical-align: -3px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .hidden { display: none !important; }
+  footer { text-align: center; color: var(--muted); font-size: 12px; padding: 20px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="logo">🌾</div>
+    <div>
+      <h1 data-i18n="app_title">Rice Disease Doctor</h1>
+      <p data-i18n="app_subtitle">AI-assisted rice leaf diagnosis for Cambodian farmers</p>
+    </div>
+  </div>
+  <div class="lang-toggle">
+    <button id="btnEn" class="active" onclick="setLang('en')">EN</button>
+    <button id="btnKm" onclick="setLang('km')">ខ្មែរ</button>
+  </div>
+</header>
+
+<div class="tabs">
+  <button id="tabDiagnose" class="active" onclick="showTab('diagnose')" data-i18n="tab_diagnose">Diagnose</button>
+  <button id="tabHistory" onclick="showTab('history')" data-i18n="tab_history">History</button>
+</div>
+
+<main>
+  <section id="panelDiagnose" class="card">
+    <div class="dropzone" id="dropzone" onclick="document.getElementById('fileInput').click()">
+      <div class="icon">📷</div>
+      <p data-i18n="drop_text">Tap to choose a photo of a rice leaf, or drag one here</p>
+      <input type="file" id="fileInput" accept="image/*" />
+    </div>
+
+    <div class="preview-wrap">
+      <img id="previewImg" />
+      <div style="flex:1; min-width:200px;">
+        <button class="primary" id="predictBtn" disabled onclick="runPredict()">
+          <span data-i18n="btn_predict">Diagnose Leaf</span>
+        </button>
+        <div id="errorMsg" style="color:var(--red-500); font-size:13px; margin-top:8px;"></div>
+      </div>
+    </div>
+
+    <div id="resultBox" class="result hidden"></div>
+  </section>
+
+  <section id="panelHistory" class="card hidden">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+      <h3 style="margin:0; color:var(--green-900);" data-i18n="history_title">Prediction History</h3>
+      <button class="secondary" onclick="clearHistory()" data-i18n="btn_clear">Clear</button>
+    </div>
+    <div id="historyList"></div>
+  </section>
+</main>
+
+<footer>
+  <span data-i18n="footer_text">Built for a Cambodia-focused AI course project. Not a substitute for a qualified agricultural extension officer.</span>
+</footer>
+
+<script>
+const API_BASE = window.location.origin.includes(':5500') || window.location.protocol === 'file:'
+  ? 'http://localhost:8000'
+  : (window.__API_BASE__ || 'http://localhost:8000');
+
+const I18N = {
+  en: {
+    app_title: "Rice Disease Doctor",
+    app_subtitle: "AI-assisted rice leaf diagnosis for Cambodian farmers",
+    tab_diagnose: "Diagnose",
+    tab_history: "History",
+    drop_text: "Tap to choose a photo of a rice leaf, or drag one here",
+    btn_predict: "Diagnose Leaf",
+    btn_predicting: "Diagnosing...",
+    btn_clear: "Clear",
+    history_title: "Prediction History",
+    footer_text: "Built for a Cambodia-focused AI course project. Not a substitute for a qualified agricultural extension officer.",
+    confidence_label: "Confidence",
+    top3_label: "Other possibilities",
+    advice_label: "Recommended actions",
+    disclaimer: "This is an automated estimate. For high-value fields or uncertain cases, please confirm with your local agricultural extension officer.",
+    empty_history: "No predictions yet. Diagnose a leaf to see it here.",
+    error_generic: "Something went wrong. Please try again.",
+    error_no_model: "The model isn't trained/loaded on the server yet.",
+    severity: { high: "High severity", medium: "Medium severity", none: "Healthy", low: "Low severity" },
+  },
+  km: {
+    app_title: "វេជ្ជបណ្ឌិតជំងឺស្រូវ",
+    app_subtitle: "ការវិនិច្ឆ័យស្លឹកស្រូវដោយ AI សម្រាប់កសិករកម្ពុជា",
+    tab_diagnose: "វិនិច្ឆ័យ",
+    tab_history: "ប្រវត្តិ",
+    drop_text: "ចុចដើម្បីជ្រើសរូបថតស្លឹកស្រូវ ឬអូសដាក់ទីនេះ",
+    btn_predict: "វិនិច្ឆ័យស្លឹក",
+    btn_predicting: "កំពុងវិនិច្ឆ័យ...",
+    btn_clear: "សម្អាត",
+    history_title: "ប្រវត្តិការវិនិច្ឆ័យ",
+    footer_text: "សាងសង់សម្រាប់គម្រោងវគ្គសិក្សា AI ផ្តោតលើកម្ពុជា។ មិនមែនជំនួសមន្ត្រីកសិកម្មជំនាញនោះទេ។",
+    confidence_label: "កម្រិតទំនុកចិត្ត",
+    top3_label: "លទ្ធភាពផ្សេងទៀត",
+    advice_label: "វិធានការណែនាំ",
+    disclaimer: "នេះជាការប៉ាន់ស្មានស្វ័យប្រវត្តិ។ សម្រាប់ស្រែដែលមានតម្លៃខ្ពស់ ឬករណីមិនច្បាស់លាស់ សូមប្រឹក្សាមន្ត្រីកសិកម្មមូលដ្ឋាន។",
+    empty_history: "មិនទាន់មានការវិនិច្ឆ័យនៅឡើយទេ។ វិនិច្ឆ័យស្លឹកមួយដើម្បីមើលនៅទីនេះ។",
+    error_generic: "មានបញ្ហាកើតឡើង។ សូមព្យាយាមម្តងទៀត។",
+    error_no_model: "ម៉ូដែលមិនទាន់ត្រូវបានបណ្តុះបណ្តាល ឬផ្ទុកនៅលើម៉ាស៊ីនមេនៅឡើយទេ។",
+    severity: { high: "កម្រិតធ្ងន់ធ្ងរខ្ពស់", medium: "កម្រិតមធ្យម", none: "សុខភាពល្អ", low: "កម្រិតទាប" },
+  }
+};
+
+let lang = 'en';
+let selectedFile = null;
+
+function t(key) { return I18N[lang][key] || key; }
+
+function setLang(l) {
+  lang = l;
+  document.getElementById('btnEn').classList.toggle('active', l === 'en');
+  document.getElementById('btnKm').classList.toggle('active', l === 'km');
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    el.textContent = t(el.getAttribute('data-i18n'));
+  });
+  if (lastResult) renderResult(lastResult);
+  loadHistory();
+}
+
+function showTab(tab) {
+  document.getElementById('tabDiagnose').classList.toggle('active', tab === 'diagnose');
+  document.getElementById('tabHistory').classList.toggle('active', tab === 'history');
+  document.getElementById('panelDiagnose').classList.toggle('hidden', tab !== 'diagnose');
+  document.getElementById('panelHistory').classList.toggle('hidden', tab !== 'history');
+  if (tab === 'history') loadHistory();
+}
+
+const dropzone = document.getElementById('dropzone');
+const fileInput = document.getElementById('fileInput');
+const previewImg = document.getElementById('previewImg');
+const predictBtn = document.getElementById('predictBtn');
+
+fileInput.addEventListener('change', (e) => handleFile(e.target.files[0]));
+dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('dragover'); });
+dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+dropzone.addEventListener('drop', (e) => {
+  e.preventDefault();
+  dropzone.classList.remove('dragover');
+  if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+});
+
+function handleFile(file) {
+  if (!file) return;
+  selectedFile = file;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    previewImg.src = e.target.result;
+    previewImg.style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+  predictBtn.disabled = false;
+  document.getElementById('errorMsg').textContent = '';
+  document.getElementById('resultBox').classList.add('hidden');
+}
+
+let lastResult = null;
+
+async function runPredict() {
+  if (!selectedFile) return;
+  predictBtn.disabled = true;
+  predictBtn.innerHTML = `<span class="spinner"></span>${t('btn_predicting')}`;
+  document.getElementById('errorMsg').textContent = '';
+
+  const formData = new FormData();
+  formData.append('file', selectedFile);
+
+  try {
+    const res = await fetch(`${API_BASE}/api/predict`, { method: 'POST', body: formData });
+    if (res.status === 503) {
+      document.getElementById('errorMsg').textContent = t('error_no_model');
+      return;
+    }
+    if (!res.ok) throw new Error('request failed');
+    const data = await res.json();
+    lastResult = data;
+    renderResult(data);
+  } catch (err) {
+    document.getElementById('errorMsg').textContent = t('error_generic');
+  } finally {
+    predictBtn.disabled = false;
+    predictBtn.innerHTML = `<span data-i18n="btn_predict">${t('btn_predict')}</span>`;
+  }
+}
+
+function renderResult(data) {
+  const box = document.getElementById('resultBox');
+  box.classList.remove('hidden');
+  const treatment = data.treatment || {};
+  const sevKey = treatment.severity || 'medium';
+  const displayName = lang === 'km' ? (treatment.display_name_km || data.predicted_label) : (treatment.display_name_en || data.predicted_label);
+  const adviceList = lang === 'km' ? (treatment.advice_km || []) : (treatment.advice_en || []);
+
+  const top3Html = data.top3.map(item => {
+    const tr = TREATMENT_NAMES[item.label] || {};
+    const name = lang === 'km' ? (tr.km || item.label) : (tr.en || item.label);
+    return `
+      <div class="bar-row">
+        <div class="bar-label">${name}</div>
+        <div class="bar-track"><div class="bar-fill" style="width:${(item.confidence*100).toFixed(1)}%"></div></div>
+        <div class="bar-pct">${(item.confidence*100).toFixed(1)}%</div>
+      </div>`;
+  }).join('');
+
+  box.innerHTML = `
+    <div class="result-header">
+      <div>
+        <span class="badge ${sevKey}">${t('severity')[sevKey] || sevKey}</span>
+        <div class="disease-name">${displayName}</div>
+        <div class="confidence">${t('confidence_label')}: ${(data.confidence*100).toFixed(1)}%</div>
+      </div>
+    </div>
+    <div class="section-title">${t('top3_label')}</div>
+    ${top3Html}
+    <div class="section-title">${t('advice_label')}</div>
+    <ul class="advice-list">${adviceList.map(a => `<li>${a}</li>`).join('')}</ul>
+    <div class="disclaimer">${t('disclaimer')}</div>
+  `;
+}
+
+// Small lookup so top-3 bars can show localized names without re-fetching treatment info.
+const TREATMENT_NAMES = {
+  bacterial_leaf_blight: { en: "Bacterial Leaf Blight", km: "ស្លឹកឆេះលឿង (បាក់តេរី)" },
+  bacterial_leaf_streak: { en: "Bacterial Leaf Streak", km: "ឆួងស្លឹក (បាក់តេរី)" },
+  bacterial_panicle_blight: { en: "Bacterial Panicle Blight", km: "ឆេះកួរ (បាក់តេរី)" },
+  blast: { en: "Blast", km: "ជំងឺប្លាស" },
+  brown_spot: { en: "Brown Spot", km: "ចំណុចត្នោត" },
+  dead_heart: { en: "Dead Heart (borer)", km: "ដើមងាប់ (ដងវែក)" },
+  downy_mildew: { en: "Downy Mildew", km: "ជំងឺរបុយស" },
+  hispa: { en: "Hispa", km: "ជីងគ្រួច" },
+  normal: { en: "Healthy", km: "សុខភាពល្អ" },
+  tungro: { en: "Tungro", km: "ទុងរ៉ូ" },
+};
+
+async function loadHistory() {
+  const list = document.getElementById('historyList');
+  try {
+    const res = await fetch(`${API_BASE}/api/history`);
+    const items = await res.json();
+    if (!items.length) {
+      list.innerHTML = `<div class="empty-state">${t('empty_history')}</div>`;
+      return;
+    }
+    list.innerHTML = items.map(item => {
+      const name = lang === 'km' ? item.display_name_km : item.display_name_en;
+      const date = new Date(item.created_at * 1000).toLocaleString();
+      return `
+        <div class="history-item">
+          <img src="${API_BASE}${item.image_url}" />
+          <div class="meta">
+            <div class="name">${name}</div>
+            <div class="time">${date}</div>
+          </div>
+          <div class="conf">${(item.confidence*100).toFixed(1)}%</div>
+        </div>`;
+    }).join('');
+  } catch (err) {
+    list.innerHTML = `<div class="empty-state">${t('error_generic')}</div>`;
+  }
+}
+
+async function clearHistory() {
+  await fetch(`${API_BASE}/api/history`, { method: 'DELETE' });
+  loadHistory();
+}
+</script>
+</body>
+</html>

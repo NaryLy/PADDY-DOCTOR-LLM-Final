@@ -1,0 +1,20 @@
+# dataset (too large / not ours to redistribute -- see README "Get the data ready")
+data/
+
+# trained checkpoints (regenerate via training/run_all.sh)
+models/*.pt
+
+# python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# db + logs created at runtime
+backend/history.db
+backend/uploads/
+results/train_log.txt
+
+# os / editor
+.DS_Store
+.vscode/
