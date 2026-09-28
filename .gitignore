@@ -4,10 +4,6 @@ data/
 # trained checkpoints (regenerate via training/run_all.sh)
 models/*.pt
 
-# hf-space-deploy is its own separate git repo (pushed to Hugging Face Spaces
-# with git-lfs), not part of this GitHub repo -- see hf-space-deploy/README.md
-hf-space-deploy/
-
 # python
 __pycache__/
 *.pyc

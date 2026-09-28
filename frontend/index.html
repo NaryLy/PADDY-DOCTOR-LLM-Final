@@ -191,10 +191,10 @@
 </footer>
 
 <script>
-// Live backend on Hugging Face Spaces (Docker SDK). Fill this in with your
-// actual Space URL once it's created -- shown on the Space's page, looks like
-// "https://<your-hf-username>-<space-name>.hf.space".
-const HF_SPACE_URL = 'https://YOUR-USERNAME-rice-disease-doctor.hf.space';
+// Live backend on Render. Fill this in with your actual service URL once it's
+// deployed -- shown on the Render dashboard, looks like
+// "https://rice-disease-doctor.onrender.com".
+const BACKEND_API_URL = 'https://YOUR-SERVICE-NAME.onrender.com';
 
 const isLocal = window.location.hostname === 'localhost'
   || window.location.hostname === '127.0.0.1'
@@ -203,7 +203,7 @@ const isLocal = window.location.hostname === 'localhost'
 
 const API_BASE = isLocal
   ? 'http://localhost:8000'
-  : (window.__API_BASE__ || HF_SPACE_URL);
+  : (window.__API_BASE__ || BACKEND_API_URL);
 
 const I18N = {
   en: {
