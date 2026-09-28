@@ -191,9 +191,19 @@
 </footer>
 
 <script>
-const API_BASE = window.location.origin.includes(':5500') || window.location.protocol === 'file:'
+// Live backend on Hugging Face Spaces (Docker SDK). Fill this in with your
+// actual Space URL once it's created -- shown on the Space's page, looks like
+// "https://<your-hf-username>-<space-name>.hf.space".
+const HF_SPACE_URL = 'https://YOUR-USERNAME-rice-disease-doctor.hf.space';
+
+const isLocal = window.location.hostname === 'localhost'
+  || window.location.hostname === '127.0.0.1'
+  || window.location.origin.includes(':5500')
+  || window.location.protocol === 'file:';
+
+const API_BASE = isLocal
   ? 'http://localhost:8000'
-  : (window.__API_BASE__ || 'http://localhost:8000');
+  : (window.__API_BASE__ || HF_SPACE_URL);
 
 const I18N = {
   en: {
