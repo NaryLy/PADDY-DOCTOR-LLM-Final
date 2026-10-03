@@ -18,3 +18,7 @@ results/train_log.txt
 # os / editor
 .DS_Store
 .vscode/
+
+# secrets + build cache
+.env
+rag_index_cache.json

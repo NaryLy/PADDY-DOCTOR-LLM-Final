@@ -408,5 +408,83 @@ async function clearHistory() {
   loadHistory();
 }
 </script>
+<!-- ===== Follow-up chat (RAG) — added for the LLM course requirement ===== -->
+<style>
+  #chatCard{max-width:720px;margin:16px auto;background:#fff;border-radius:14px;
+    box-shadow:0 2px 10px rgba(0,0,0,.06);padding:16px;font-family:inherit;display:none}
+  #chatCard h3{margin:0 0 8px;color:#14532d}
+  #chatLog{max-height:280px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
+  .chatMsg{padding:8px 12px;border-radius:12px;max-width:85%;font-size:14px;line-height:1.4}
+  .chatMsg.user{align-self:flex-end;background:#dcfce7;color:#14532d}
+  .chatMsg.bot{align-self:flex-start;background:#f1f5f9;color:#0f172a;white-space:pre-wrap}
+  #chatRow{display:flex;gap:8px}
+  #chatInput{flex:1;padding:10px 12px;border:1px solid #cbd5e1;border-radius:10px;font-size:14px;font-family:inherit}
+  #chatSend{padding:10px 16px;border:none;border-radius:10px;background:#16a34a;color:#fff;cursor:pointer}
+  #chatSend:disabled{opacity:.5;cursor:default}
+  #chatHint{font-size:12px;color:#64748b;margin-top:6px}
+</style>
+<div id="chatCard">
+  <h3 id="chatTitle">Ask a follow-up question</h3>
+  <div id="chatLog"></div>
+  <div id="chatRow">
+    <input id="chatInput" placeholder="e.g. Is it safe to spray near harvest?" />
+    <button id="chatSend" onclick="sendChat()">Send</button>
+  </div>
+  <div id="chatHint">General guidance only — confirm with a local extension officer.</div>
+</div>
+<script>
+  const CHAT_SESSION_ID = 'web-' + Math.random().toString(36).slice(2);
+  const CHAT_I18N = {
+    en: { title: "Ask a follow-up question", placeholder: "e.g. Is it safe to spray near harvest?",
+          send: "Send", hint: "General guidance only — confirm with a local extension officer.",
+          thinking: "Thinking…", error: "Sorry, I couldn't answer that right now." },
+    km: { title: "សួរសំណួរបន្ថែម", placeholder: "ឧ. តើការបាញ់ថ្នាំជិតពេលច្រូតមានសុវត្ថិភាពទេ?",
+          send: "ផ្ញើ", hint: "ការណែនាំទូទៅ — សូមបញ្ជាក់ជាមួយមន្ត្រីកសិកម្មមូលដ្ឋាន។",
+          thinking: "កំពុងគិត…", error: "សុំទោស ខ្ញុំមិនអាចឆ្លើយបានទេឥឡូវនេះ។" },
+  };
+  function applyChatLang(){
+    const L = CHAT_I18N[(typeof lang!=='undefined'?lang:'en')]||CHAT_I18N.en;
+    document.getElementById('chatTitle').textContent=L.title;
+    document.getElementById('chatInput').placeholder=L.placeholder;
+    document.getElementById('chatSend').textContent=L.send;
+    document.getElementById('chatHint').textContent=L.hint;
+  }
+  // Only show the chat box if the backend actually has an LLM configured.
+  (async function initChat(){
+    try{
+      const r = await fetch(`${API_BASE}/api/health`);
+      const h = await r.json();
+      if(h && h.chat_ready){ document.getElementById('chatCard').style.display='block'; applyChatLang(); }
+    }catch(e){ /* backend down -> leave chat hidden */ }
+  })();
+  function addChatMsg(text,who){
+    const log=document.getElementById('chatLog');
+    const div=document.createElement('div');
+    div.className='chatMsg '+who; div.textContent=text;
+    log.appendChild(div); log.scrollTop=log.scrollHeight; return div;
+  }
+  async function sendChat(){
+    const input=document.getElementById('chatInput'), btn=document.getElementById('chatSend');
+    const msg=input.value.trim(); if(!msg) return;
+    const L=CHAT_I18N[(typeof lang!=='undefined'?lang:'en')]||CHAT_I18N.en;
+    addChatMsg(msg,'user'); input.value=''; btn.disabled=true;
+    const pending=addChatMsg(L.thinking,'bot');
+    try{
+      const res=await fetch(`${API_BASE}/api/chat`,{
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          message:msg,
+          lang:(typeof lang!=='undefined'?lang:'en'),
+          session_id:CHAT_SESSION_ID,
+          disease:(typeof lastResult!=='undefined'&&lastResult)?lastResult.predicted_label:null,
+        }),
+      });
+      const data=await res.json();
+      pending.textContent=res.ok?data.answer:(data.detail||L.error);
+    }catch(e){ pending.textContent=L.error; }
+    finally{ btn.disabled=false; input.focus(); }
+  }
+  document.getElementById('chatInput').addEventListener('keydown',e=>{ if(e.key==='Enter') sendChat(); });
+</script>
 </body>
 </html>

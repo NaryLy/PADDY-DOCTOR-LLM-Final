@@ -7,7 +7,7 @@ COPY requirements.txt .
 # default CUDA wheels, and this Space only ever runs on CPU.
 RUN pip install --no-cache-dir --extra-index-url https://download.pytorch.org/whl/cpu -r requirements.txt
 
-COPY app.py treatment_db.py ./
+COPY app.py treatment_db.py rag.py ./
 COPY models ./models
 
 # Render (and most Docker PaaS hosts) inject a $PORT env var the container must
