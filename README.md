@@ -31,6 +31,10 @@ advice (field-flooding, egg parasitoids, pheromone traps) instead of a fungicide
 
 ![Pest damage example](screenshot_result_pest.png)
 
+Each diagnosis also includes an optional follow-up chat, for free-text questions about the result (grounded in the treatment reference content, bilingual):
+
+![Follow-up chat](screenshot_chat.png)
+
 ## Features
 
 - **Photo-based diagnosis** — upload or drag-and-drop a leaf photo, get the predicted
@@ -43,6 +47,7 @@ advice (field-flooding, egg parasitoids, pheromone traps) instead of a fungicide
 - **Prediction history** — every diagnosis is logged (image + result) to a local
   SQLite database and browsable in a History tab, so a farmer or agent can track
   recurring issues over time.
+- **Follow-up chat (RAG)** — ask a free-text follow-up question about the result (e.g. "is it safe to spray near harvest?") and get a grounded answer, in English or Khmer, via retrieval-augmented generation over the treatment reference content. Runs locally for free with Ollama by default; can be switched to OpenAI instead via a few environment variables (see [`CHANGES_AND_SETUP.md`](CHANGES_AND_SETUP.md)).
 
 ## How it works
 
