@@ -23,7 +23,10 @@ from fastapi.staticfiles import StaticFiles
 from PIL import Image
 from torchvision import models, transforms
 
+from pydantic import BaseModel
+
 from treatment_db import get_treatment
+import rag  # NEW: RAG layer for follow-up chat (loads .env itself)
 
 BASE_DIR = os.path.dirname(__file__)
 PROJECT_ROOT = os.path.join(BASE_DIR, "..")
@@ -115,6 +118,12 @@ def on_startup():
     except FileNotFoundError as e:
         # Server can still start (e.g. for frontend dev) but /api/predict will 503 until trained.
         print(f"WARNING: {e}")
+    # NEW: build the RAG knowledge base for /api/chat. If it fails (no LLM configured
+    # or network down), the app keeps running and /api/chat returns a clear message.
+    try:
+        rag.build_index()
+    except Exception as e:
+        print(f"WARNING: RAG index not built, /api/chat will be unavailable: {e}")
 
 
 @app.get("/api/health")
@@ -122,6 +131,7 @@ def health():
     return {
         "status": "ok",
         "model_loaded": _model is not None,
+        "chat_ready": rag.is_ready(),
         "classes": _class_names,
         "checkpoint": _checkpoint_meta,
     }
@@ -175,6 +185,39 @@ async def predict(file: UploadFile = File(...)):
         "treatment": treatment,
         "image_url": f"/uploads/{saved_name}",
     }
+
+
+# ---- NEW: follow-up chat (RAG). Both the website and the Telegram bot call this. ----
+CHAT_SESSIONS = {}  # session_id / chat_id -> {"disease":..., "history":[...]}  (in-memory)
+
+
+class ChatRequest(BaseModel):
+    message: str
+    lang: str = "en"
+    session_id: str | None = None
+    disease: str | None = None
+
+
+@app.post("/api/chat")
+def chat(req: ChatRequest):
+    if not rag.is_ready():
+        raise HTTPException(status_code=503,
+                            detail="Chat is not available -- no LLM configured on the server.")
+    sid = req.session_id or "anonymous"
+    session = CHAT_SESSIONS.setdefault(sid, {"disease": None, "history": []})
+    disease = req.disease or session.get("disease")
+    if req.disease:
+        session["disease"] = req.disease
+    try:
+        result = rag.answer(question=req.message,
+                            lang=req.lang if req.lang in ("en", "km") else "en",
+                            disease=disease, history=session["history"])
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"LLM request failed: {e}")
+    session["history"].append({"role": "user", "content": req.message})
+    session["history"].append({"role": "assistant", "content": result["answer"]})
+    session["history"] = session["history"][-12:]
+    return {"answer": result["answer"], "sources": result["sources"], "used_disease": disease}
 
 
 @app.get("/api/history")

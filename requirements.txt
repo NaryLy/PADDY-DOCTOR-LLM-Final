@@ -7,3 +7,5 @@ pillow
 matplotlib
 numpy
 requests
+python-dotenv
+python-telegram-bot==21.6
