@@ -35,6 +35,10 @@ Each diagnosis also includes an optional follow-up chat, for free-text questions
 
 ![Follow-up chat](screenshot_chat.png)
 
+The same diagnosis + follow-up chat is also available as a Telegram bot, for farmers and agents who'd rather use an app they already have than a website:
+
+![Telegram bot](screenshot_telegram.png)
+
 ## Features
 
 - **Photo-based diagnosis** — upload or drag-and-drop a leaf photo, get the predicted
@@ -48,6 +52,7 @@ Each diagnosis also includes an optional follow-up chat, for free-text questions
   SQLite database and browsable in a History tab, so a farmer or agent can track
   recurring issues over time.
 - **Follow-up chat (RAG)** — ask a free-text follow-up question about the result (e.g. "is it safe to spray near harvest?") and get a grounded answer, in English or Khmer, via retrieval-augmented generation over the treatment reference content. Runs locally for free with Ollama by default; can be switched to OpenAI instead via a few environment variables (see [`CHANGES_AND_SETUP.md`](CHANGES_AND_SETUP.md)).
+- **Telegram bot** — the same diagnosis and follow-up chat, available via Telegram: send a leaf photo to the bot and get the diagnosis back as a chat message, with `/km` and `/en` commands to switch language. Useful for farmers already on Telegram, no browser needed.
 
 ## How it works
 
